@@ -23,7 +23,6 @@
     h2 {
       text-align: center;
       color: #2c3e50;
-      margin-bottom: 20px;
     }
 
     label {
@@ -37,19 +36,12 @@
       padding: 10px;
       margin: 6px 0 15px 0;
       border-radius: 6px;
-      border: 1px solid #ccd1d9;
-      font-size: 14px;
+      border: 1px solid #ccc;
     }
 
     input:focus, textarea:focus {
       border-color: #3b82f6;
-      box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
       outline: none;
-    }
-
-    textarea {
-      resize: none;
-      height: 70px;
     }
 
     button {
@@ -60,7 +52,6 @@
       border: none;
       border-radius: 6px;
       font-size: 15px;
-      font-weight: 600;
       cursor: pointer;
     }
 
@@ -86,8 +77,11 @@
     <label>Faculty Name</label>
     <input type="text" id="facultyName" required>
 
-    <label>Program</label>
-    <input type="text" id="program" required>
+    <label>Subject</label>
+    <input type="text" id="subject" required>
+
+    <label>Program / Course</label>
+    <input type="text" id="program" placeholder="Enter Program / Course" required>
 
     <label>Branch</label>
     <input type="text" id="branch" required>
@@ -111,7 +105,7 @@
 
 <script>
 
-// ✅ Default values
+// default values
 window.onload = function() {
   if (!document.getElementById("criterionNo").value)
     document.getElementById("criterionNo").value = 1;
@@ -120,28 +114,24 @@ window.onload = function() {
     document.getElementById("formNo").value = 1;
 };
 
-// 🔒 Restrict rating input (only 1–5 or blank)
+// rating restriction
 document.getElementById("rating").addEventListener("input", function() {
-  if (!["", "1","2","3","4","5"].includes(this.value)) {
+  if (!["","1","2","3","4","5"].includes(this.value)) {
     this.value = "";
   }
 });
 
-// 🔥 Enter key navigation
+// enter navigation
 const inputs = document.querySelectorAll("input, textarea");
 
 inputs.forEach((input, index) => {
   input.addEventListener("keydown", function(e) {
     if (e.key === "Enter") {
 
-      // Rating OR Comments → submit
       if (input.id === "rating" || input.id === "comments") {
         e.preventDefault();
         document.getElementById("form").dispatchEvent(new Event("submit"));
-      }
-
-      // Otherwise → next field
-      else {
+      } else {
         e.preventDefault();
         if (index + 1 < inputs.length) {
           inputs[index + 1].focus();
@@ -151,7 +141,7 @@ inputs.forEach((input, index) => {
   });
 });
 
-// ✅ Submit logic
+// submit logic
 document.getElementById("form").addEventListener("submit", function(e) {
   e.preventDefault();
 
@@ -159,9 +149,8 @@ document.getElementById("form").addEventListener("submit", function(e) {
   let currentFormNo = parseInt(document.getElementById("formNo").value);
   let ratingValue = document.getElementById("rating").value;
 
-  // Final validation
   if (ratingValue !== "" && !["1","2","3","4","5"].includes(ratingValue)) {
-    alert("Rating must be between 1 and 5");
+    alert("Rating must be 1–5");
     document.getElementById("rating").focus();
     return;
   }
@@ -170,6 +159,7 @@ document.getElementById("form").addEventListener("submit", function(e) {
     formNo: currentFormNo,
     criterionNo: currentCriterion,
     facultyName: document.getElementById("facultyName").value,
+    subject: document.getElementById("subject").value,
     program: document.getElementById("program").value,
     branch: document.getElementById("branch").value,
     semester: document.getElementById("semester").value,
@@ -186,9 +176,8 @@ document.getElementById("form").addEventListener("submit", function(e) {
 
   alert("Submitted successfully");
 
-  // 🔁 Increment logic
+  // increment logic
   currentCriterion++;
-
   if (currentCriterion > 20) {
     currentCriterion = 1;
     currentFormNo++;
@@ -197,11 +186,9 @@ document.getElementById("form").addEventListener("submit", function(e) {
   document.getElementById("criterionNo").value = currentCriterion;
   document.getElementById("formNo").value = currentFormNo;
 
-  // 🔥 Clear rating & comments
+  // clear fields
   document.getElementById("rating").value = "";
   document.getElementById("comments").value = "";
-
-  // 🔥 Focus back to rating
   document.getElementById("rating").focus();
 });
 
@@ -209,4 +196,4 @@ document.getElementById("form").addEventListener("submit", function(e) {
 
 </body>
 </html>
-<!-- update -->
+>>>>>>> 47a4abf (added subject and program/course)
