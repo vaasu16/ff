@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Feedback Form</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 30px;
+    }
+
+    .container {
+      background: #ffffff;
+      max-width: 450px;
+      margin: auto;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 13px;
+      color: #34495e;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0 15px 0;
+      border-radius: 6px;
+      border: 1px solid #ccd1d9;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+      outline: none;
+    }
+
+    textarea {
+      resize: none;
+      height: 70px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Feedback Form</h2>
+
+  <form id="form">
+
+    <label>Form No</label>
+    <input type="number" id="formNo">
+
+    <label>Criterion No</label>
+    <input type="number" id="criterionNo" min="1" max="20">
+
+    <label>Faculty Name</label>
+    <input type="text" id="facultyName" required>
+
+    <label>Program</label>
+    <input type="text" id="program" required>
+
+    <label>Branch</label>
+    <input type="text" id="branch" required>
+
+    <label>Semester</label>
+    <input type="text" id="semester" required>
+
+    <label>Section</label>
+    <input type="text" id="section" required>
+
+    <label>Rating (1–5)</label>
+    <input type="text" id="rating" placeholder="Enter 1–5" maxlength="1">
+
+    <label>Comments</label>
+    <textarea id="comments"></textarea>
+
+    <button type="submit">Submit</button>
+
+  </form>
+</div>
+
+<script>
+
+// ✅ Default values
+window.onload = function() {
+  if (!document.getElementById("criterionNo").value)
+    document.getElementById("criterionNo").value = 1;
+
+  if (!document.getElementById("formNo").value)
+    document.getElementById("formNo").value = 1;
+};
+
+// 🔥 Restrict rating input instantly
+document.getElementById("rating").addEventListener("input", function() {
+  if (!["", "1","2","3","4","5"].includes(this.value)) {
+    this.value = "";
+  }
+});
+
+// 🔥 Enter key behavior
+const inputs = document.querySelectorAll("input, textarea");
+
+inputs.forEach((input, index) => {
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+
+      // Rating OR Comments → submit
+      if (input.id === "rating" || input.id === "comments") {
+        e.preventDefault();
+        document.getElementById("form").dispatchEvent(new Event("submit"));
+      }
+
+      // Otherwise → next field
+      else {
+        e.preventDefault();
+        if (index + 1 < inputs.length) {
+          inputs[index + 1].focus();
+        }
+      }
+    }
+  });
+});
+
+// ✅ Submit logic
+document.getElementById("form").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  let currentCriterion = parseInt(document.getElementById("criterionNo").value);
+  let currentFormNo = parseInt(document.getElementById("formNo").value);
+  let ratingValue = document.getElementById("rating").value;
+
+  // Final validation
+  if (ratingValue !== "" && !["1","2","3","4","5"].includes(ratingValue)) {
+    alert("Rating must be between 1 and 5");
+    document.getElementById("rating").focus();
+    return;
+  }
+
+  const data = {
+    formNo: currentFormNo,
+    criterionNo: currentCriterion,
+    facultyName: document.getElementById("facultyName").value,
+    program: document.getElementById("program").value,
+    branch: document.getElementById("branch").value,
+    semester: document.getElementById("semester").value,
+    section: document.getElementById("section").value,
+    rating: ratingValue,
+    comments: document.getElementById("comments").value
+  };
+
+  fetch("https://script.google.com/macros/s/AKfycbxZtfuIszzNoxtwB6_NwpqiRuxUyW3msLX9ISJuIx31yfH4hWuEzvCKz-BtZlhbGqHEhw/exec", {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(data)
+  });
+
+  alert("Submitted successfully");
+
+  // 🔁 Increment logic
+  currentCriterion++;
+
+  if (currentCriterion > 20) {
+    currentCriterion = 1;
+    currentFormNo++;
+  }
+
+  document.getElementById("criterionNo").value = currentCriterion;
+  document.getElementById("formNo").value = currentFormNo;
+
+  // 🔥 Clear only rating & focus
+  document.getElementById("rating").value = "";
+  document.getElementById("rating").focus();
+});
+
+</script>
+
+</body>
+</html>
